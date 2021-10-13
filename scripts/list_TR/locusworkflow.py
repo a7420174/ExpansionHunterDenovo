@@ -43,8 +43,11 @@ def load_target_regions(fname):
 
 
 Parameters = namedtuple(
-    "Parameters", ["manifest_path", "multisample_profile_path", "output_path", "target_region_path", "min_count"]
+    "Parameters", ["multisample_profile_path", "output_path", "target_region_path", "min_count"]
 )
+# Parameters = namedtuple(
+#     "Parameters", ["manifest_path", "multisample_profile_path", "output_path", "target_region_path", "min_count"]
+# )
 
 
 def generate_table_with_anchor_counts(combined_counts):
@@ -79,10 +82,10 @@ def run(params):
         logging.info("Restricting analysis to %i regions", len(target_regions))
         count_table = common.filter_counts_by_region(count_table, target_regions)
 
-    manifest = common.load_manifest(params.manifest_path)
-    sample_status = common.extract_case_control_assignments(manifest)
+    # manifest = common.load_manifest(params.manifest_path)
+    # sample_status = common.extract_case_control_assignments(manifest)
 
-    header = "contig\tstart\tend\tmotif\tmotif_len\tmean_count\tAC"
+    header = "contig\tstart\tend\tmotif\tmotif_len\tAT_rate\tsum_count"
     with open(params.output_path, "w") as results_file:
         print(header, file=results_file)
         for row in count_table:
@@ -94,15 +97,15 @@ def run(params):
             start, end = coords.split("-")
             start, end = int(start), int(end)
 
-            mean_count = common.mean_count(
-                sample_status, row["sample_counts"]
-            )
+            # mean_count = common.mean_count(
+            #     sample_status, row["sample_counts"]
+            # )
 
             motif_len = len(row['unit'])
-            # GC_rate = (row['unit'].count('G') + row['unit'].count('C'))/len(row['unit'])
-            AC = 0
+            AT_rate = (row['unit'].count('A') + row['unit'].count('T'))/len(row['unit'])
+            sum_count = 0
             for _, c in row["sample_counts"].items():
-                AC+=1
+                sum_count+=1
 
             print(
                 contig,
@@ -110,9 +113,9 @@ def run(params):
                 end,
                 row["unit"],
                 motif_len,
-                # GC_rate,
-                mean_count,
-                AC,
+                AT_rate,
+                # mean_count,
+                sum_count,
                 sep="\t",
                 file=results_file,
             )

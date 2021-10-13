@@ -165,7 +165,7 @@ def resample_quantiles(counts, num_resamples, target_quantile_value):
     return resampled_quantiles
 
 
-def run_zscore_analysis(sample_status, sample_counts):
+def run_zscore_analysis(sample_status, sample_counts, z_cutoff):
     raw_counts = [sample_counts.get(sample, 0) for sample, _ in sample_status.items()]
     quantiles = resample_quantiles(raw_counts, 100, 0.95)
     (mu, sigma) = stats.norm.fit(quantiles)
@@ -184,13 +184,13 @@ def run_zscore_analysis(sample_status, sample_counts):
     for sample, count in case_counts.items():
         zscore = (count - mu) / sigma
 
-        if zscore > 1.0:
+        if zscore > z_cutoff:
             cases_with_high_counts[sample] = count
             top_zscore = max(top_zscore, zscore)
 
     return (top_zscore, cases_with_high_counts)
 
-def run_zscore_analysis_no_ctrl(sample_status, sample_counts):
+def run_zscore_analysis_no_ctrl(sample_status, sample_counts, z_cutoff):
     raw_counts = [sample_counts.get(sample, 0) for sample, _ in sample_status.items()]
     quantiles = resample_quantiles(raw_counts, 100, 0.95)
     (mu, sigma) = stats.norm.fit(quantiles)
@@ -214,7 +214,7 @@ def run_zscore_analysis_no_ctrl(sample_status, sample_counts):
     for sample, count in ctrl_counts.items():
         zscore = (count - mu) / sigma
 
-        if zscore > 0:
+        if zscore > z_cutoff:
             Next = False
 
     cases_with_high_counts = {}
@@ -224,7 +224,7 @@ def run_zscore_analysis_no_ctrl(sample_status, sample_counts):
         for sample, count in case_counts.items():
             zscore = (count - mu) / sigma
 
-            if zscore > 0:
+            if zscore > z_cutoff:
                 cases_with_high_counts[sample] = count
                 zscores[sample] = zscore
                 # top_zscore = max(top_zscore, zscore)

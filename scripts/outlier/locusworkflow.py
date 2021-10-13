@@ -43,7 +43,7 @@ def load_target_regions(fname):
 
 
 Parameters = namedtuple(
-    "Parameters", ["manifest_path", "multisample_profile_path", "output_path", "target_region_path", "min_count"]
+    "Parameters", ["manifest_path", "multisample_profile_path", "output_path", "target_region_path", "min_count", "z_score", "no_ctrl"]
 )
 
 
@@ -82,7 +82,7 @@ def run(params):
     manifest = common.load_manifest(params.manifest_path)
     sample_status = common.extract_case_control_assignments(manifest)
 
-    header = "contig\tstart\tend\tmotif\tcase_zscores\thigh_case_counts\tcounts"
+    header = "contig\tstart\tend\tmotif\thigh_case_zscores\thigh_case_counts\tcounts"
     with open(params.output_path, "w") as results_file:
         print(header, file=results_file)
         for row in count_table:
@@ -94,9 +94,16 @@ def run(params):
             start, end = coords.split("-")
             start, end = int(start), int(end)
 
-            zscores, cases_with_high_counts = common.run_zscore_analysis_no_ctrl(
-                sample_status, row["sample_counts"]
-            )
+            if params.no_ctrl == 0:
+                zscores, cases_with_high_counts = common.run_zscore_analysis(
+                    sample_status, row["sample_counts"], params.z_score
+                )
+            elif params.no_ctrl == 1:
+                zscores, cases_with_high_counts = common.run_zscore_analysis_no_ctrl(
+                    sample_status, row["sample_counts"], params.z_score
+                )
+            else:
+                raise Exception('Invalid value')
 
             if len(cases_with_high_counts) == 0:
                 continue

@@ -50,8 +50,8 @@ def add_locus_command(subparsers):
 
     # Add required arguments
     required_args = command_parser.add_argument_group("required arguments")
-    help = "TSV file describing all STR profiles"
-    required_args.add_argument("--manifest", help=help, required=True)
+    # help = "TSV file describing all STR profiles"
+    # required_args.add_argument("--manifest", help=help, required=True)
 
     help = "JSON file with combined counts of anchored in-repeat reads"
     required_args.add_argument("--multisample-profile", help=help, required=True)
@@ -91,7 +91,7 @@ def add_locus_command(subparsers):
 
 def run_locus_workflow(args):
     params = list_TR.locusworkflow.Parameters(
-        manifest_path=args.manifest,
+        # manifest_path=args.manifest,
         multisample_profile_path=args.multisample_profile,
         output_path=args.output,
         target_region_path=args.target_regions,

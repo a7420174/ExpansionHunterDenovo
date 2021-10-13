@@ -63,9 +63,19 @@ def add_locus_command(subparsers):
     command_parser.add_argument("--target-regions", help=help, default=None)
 
     def_min_count = 2
-    help = ('minimum number reads in a region for downstream analysis'
+    help = ('Minimum number reads in a region for downstream analysis'
                       ' (default: {})').format(def_min_count)
     command_parser.add_argument("--min-count", help=help, default=def_min_count, type=int)
+
+    def_z_score = 1
+    help = ('The threshold of z score'
+                      ' (default: {})').format(def_z_score)
+    command_parser.add_argument("--z-score", help=help, default=def_z_score, type=int)
+
+    def_no_ctrl = 1
+    help = ('If at least one control has z score higher than cutoff, skip.'
+                      ' (default: {})').format(def_no_ctrl)
+    command_parser.add_argument("--no-ctrl", help=help, default=def_no_ctrl, type=int)
 
     return command_parser
 
@@ -95,7 +105,9 @@ def run_locus_workflow(args):
         multisample_profile_path=args.multisample_profile,
         output_path=args.output,
         target_region_path=args.target_regions,
-        min_count=args.min_count
+        min_count=args.min_count,
+        z_score=args.z_score,
+        no_ctrl=args.no_ctrl
     )
 
     outlier.locusworkflow.run(params)
