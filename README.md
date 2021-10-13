@@ -9,6 +9,8 @@ BAM/CRAM files containing alignments of short (100-200bp) reads.
 ### 스크립트 추가 및 수정
 
 1. list_TR.py
+  
+  Tandem repeat 목록을 생성하는 스크립트
 
 - Column info: Tandem repeat의 locus, motif, motif의 길이와 A,T nucleotide의 비율, Anchored IIRs에 대한 모든 샘플의 count의 합
 
@@ -21,7 +23,7 @@ list_TR.py locus \
 --min-count 2
 ```
 
-2. outlier.py
+1. outlier.py
 
 - `--min-count`, `--z-score`, `--no-ctrl` option 추가 (locus 분석만 가능하고 motif 분석은 안됨)
 
