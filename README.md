@@ -10,7 +10,7 @@ BAM/CRAM files containing alignments of short (100-200bp) reads.
 
 1. list_TR.py
 
-- Tandem repeat의 locus, motif, motif의 길이와 A,T nucleotide의 비율, Anchored IIRs에  대한 모든 샘플의 count의 합
+- Column info: Tandem repeat의 locus, motif, motif의 길이와 A,T nucleotide의 비율, Anchored IIRs에 대한 모든 샘플의 count의 합
 
 - Usage
 
@@ -36,7 +36,7 @@ list_TR.py locus \
 
   - `counts` column에서 count에 대한 sample id가 나오도록 변경
 
-  - `top_case_zscore` column 대신 `high_case_zscores`에 cutoff를 넘는 모든 sample의 id와 z score 표시
+  - `top_case_zscore` column 대신 `high_case_zscores` column에 cutoff를 넘는 모든 sample의 id와 z score 표시
 
 - Usage
 
