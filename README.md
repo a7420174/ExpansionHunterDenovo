@@ -23,7 +23,7 @@ list_TR.py locus \
 --min-count 2
 ```
 
-1. outlier.py
+2. outlier.py
 
 - `--min-count`, `--z-score`, `--no-ctrl` option 추가 (locus 분석만 가능하고 motif 분석은 안됨)
 
@@ -50,6 +50,12 @@ outlier.py locus --manifest manifest.txt \
 --z-score 10 \
 --no-ctrl 1
 ```
+
+3. hg19_to_hg38.py
+
+- `liftOver_path`: The path of UCSC liftOver
+- `profile_list`: List of EHdn STR profiles
+
 ## License
 
 ExpansionHunter Denovo is provided under the terms and conditions of the [Apache
