@@ -67,7 +67,7 @@ def add_locus_command(subparsers):
                       ' (default: {})').format(def_min_count)
     command_parser.add_argument("--min-count", help=help, default=def_min_count, type=int)
 
-    def_z_score = 1
+    def_z_score = 0
     help = ('The threshold of z score'
                       ' (default: {})').format(def_z_score)
     command_parser.add_argument("--z-score", help=help, default=def_z_score, type=int)

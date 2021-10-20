@@ -180,15 +180,16 @@ def run_zscore_analysis(sample_status, sample_counts, z_cutoff):
     assert len(case_counts) >= 1, "Manifest must contain at least one case"
 
     cases_with_high_counts = {}
-    top_zscore = -1
+    zscores = {}
+    # top_zscore = -1
     for sample, count in case_counts.items():
         zscore = (count - mu) / sigma
 
         if zscore > z_cutoff:
             cases_with_high_counts[sample] = count
-            top_zscore = max(top_zscore, zscore)
+            # top_zscore = max(top_zscore, zscore)
 
-    return (top_zscore, cases_with_high_counts)
+    return (zscores, cases_with_high_counts)
 
 def run_zscore_analysis_no_ctrl(sample_status, sample_counts, z_cutoff):
     raw_counts = [sample_counts.get(sample, 0) for sample, _ in sample_status.items()]

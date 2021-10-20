@@ -105,7 +105,7 @@ def run(params):
             AT_rate = (row['unit'].count('A') + row['unit'].count('T'))/len(row['unit'])
             sum_count = 0
             for _, c in row["sample_counts"].items():
-                sum_count+=1
+                sum_count+=c
 
             print(
                 contig,
