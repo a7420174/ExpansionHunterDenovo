@@ -97,10 +97,6 @@ def run(params):
             start, end = coords.split("-")
             start, end = int(start), int(end)
 
-            # mean_count = common.mean_count(
-            #     sample_status, row["sample_counts"]
-            # )
-
             motif_len = len(row['unit'])
             AT_rate = (row['unit'].count('A') + row['unit'].count('T'))/len(row['unit'])
             sum_count = 0
@@ -114,10 +110,9 @@ def run(params):
                 row["unit"],
                 motif_len,
                 AT_rate,
-                # mean_count,
                 sum_count,
                 sep="\t",
                 file=results_file,
             )
-
+            
     logging.info("Done")

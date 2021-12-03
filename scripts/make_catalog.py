@@ -29,10 +29,11 @@ from functools import partial
 from copy import copy
 
 
-regions_path = '/home/a7420174/WGS/ASD_STR/outputs/ASD_EHdn.TR_list.id.tsv'
-TRF_regions_path = '/home/a7420174/WGS/ASD_STR/resources/TRF_hg38_motif.bed'
-output_path = '/home/a7420174/WGS/ASD_STR/outputs/variant_catalog_hg38_custom.json'
-info_path = '/home/a7420174/WGS/ASD_STR/outputs/EHdn_variant_info.json'
+# regions_path = '/home/a7420174/WGS/ASD_STR/outputs/ASD_EHdn.STR_list.id.tsv'
+regions_path = '/home/a7420174/WGS/ASD_STR/resources/disease_STR_loci.same.tsv'
+TRF_regions_path = '/home/a7420174/WGS/ASD_STR/resources/TRF_hg38_motif_N5_STR.bed'
+output_path = '/home/a7420174/WGS/ASD_STR/outputs/variant_catalog_hg38_custom2.json'
+info_path = '/home/a7420174/WGS/ASD_STR/outputs/EHdn_STR_info2.json'
 
 number_threads = cpu_count()
 
@@ -64,6 +65,7 @@ def MinimialUnitUnderShift(unit):
     minimal_unit = unit
     double_unit = unit + unit
     for index in range(0, len(unit)):
+        current_unit = double_unit[index:index+len(unit)]
         if current_unit < minimal_unit:
             minimal_unit = current_unit
     return minimal_unit
@@ -79,35 +81,34 @@ def ComputeCanonicalRepeatUnit(unit):
     minimal_unit_rc = MinimialUnitUnderShift(unit_rc)
 
     if minimal_unit_rc < minimal_unit:
-        return minimal_unit_rc, 1
-    return minimal_unit, 0
+        return minimal_unit_rc
+    return minimal_unit
 
 def match_regions(region, motif, id, regions, motifs):
     matched_regions = []
+    if '[' in motif:
+        motif = re.sub(r'^[ATGC]+\[([ATGC]+)\]', r'\1', motif)
+        # motif = re.sub(r'\[[ATGC]+\]', r'', motif)
+    motif = ComputeCanonicalRepeatUnit(motif)
     for R, M in zip(regions, motifs):
-        canonical_M, is_rc = ComputeCanonicalRepeatUnit(M)
+        canonical_M = ComputeCanonicalRepeatUnit(M)
         Distance = regiontools.compute_distance(region, R)
-        Cond = (Distance <= 1000) & (motif in canonical_M)
+        Cond = (Distance <= 1000) & (motif == canonical_M)
         if Cond:
             matched_region = R.chrom + ':' + str(R.start) + '-' + str(R.end)
-            matched_regions.append([matched_region, canonical_M, is_rc, Distance])
+            matched_regions.append([matched_region, M, Distance])
     if len(matched_regions) == 0:
-        return id, 'NA', motif, 'NA'
-    Dist = 1000
-    for matched_region, canonical_M, is_rc, Distance in matched_regions:
-        if motif == canonical_M:
-            if is_rc == 1:
-                return id, matched_region, reverse_complement(motif), 'Equal'
-            else:
-                return id, matched_region, motif, 'Equal'
-        if Distance < Dist:
-            Dist = Distance
-    for matched_region, canonical_M, is_rc, Distance in matched_regions:
-        if Distance == Dist:
-            if is_rc == 1:
-                return id, matched_region, reverse_complement(motif), 'Included'
-            else:
-                return id, matched_region, motif, 'Included'
+        return id, 'NA', motif
+    Min_dist = min([dist for _, _, dist in matched_regions])
+    for matched_region, M, Distance in matched_regions:
+        if Distance == Min_dist:
+            return id, matched_region, M
+    # for matched_region, canonical_M, is_rc, Distance in matched_regions:
+    #     if Distance == Dist:
+    #         if is_rc == 1:
+    #             return id, matched_region, reverse_complement(motif), 'Included'
+    #         else:
+    #             return id, matched_region, motif, 'Included'
 
 
 def main():
@@ -119,7 +120,7 @@ def main():
         matched_regions = pool.starmap(match_regions_partial, zip(regions, motifs, ids))
 
     catalog = []
-    for id, region, motif, _ in matched_regions:
+    for id, region, motif in matched_regions:
         if region != 'NA':
             json_object = dict()
             json_object['LocusId'] = id
@@ -127,15 +128,17 @@ def main():
             json_object['ReferenceRegion'] = region
             json_object['VariantType'] = 'Repeat'
             catalog.append(json_object)
-
+            
+    with open(output_path, 'w') as new_file:
+        json.dump(catalog, new_file, indent='\t')
 
     info = []
-    for id, region, motif, status in matched_regions:
+    for id, region, motif in matched_regions:
         json_object = dict()
         json_object['LocusId'] = id
         json_object['Motif'] = motif
         json_object['ReferenceRegion'] = region
-        json_object['Feature'] = status
+        # json_object['Feature'] = status
         info.append(json_object)
 
     with open(info_path, 'w') as new_file:

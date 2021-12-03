@@ -236,3 +236,15 @@ def mean_count(sample_status, sample_counts):
     avg = np.mean([sample_counts.get(sample, 0) for sample, _ in sample_status.items()])
     return avg
 
+def get_boot_stats(sample_status, sample_counts):
+    raw_counts = [sample_counts.get(sample, 0) for sample, _ in sample_status.items()]
+    quantiles = resample_quantiles(raw_counts, 100, 0.95)
+    (mu, sigma) = stats.norm.fit(quantiles)
+    sigma = max(sigma, 1)
+
+    zscores = {sample: (sample_counts.get(sample, 0)-mu)/sigma for sample, _ in sample_status.items()}
+
+
+    return (mu, sigma, zscores)
+
+

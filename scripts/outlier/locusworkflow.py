@@ -25,6 +25,7 @@ import logging
 import sys
 import json
 import numpy as np
+from numpy.random import sample
 import scipy.stats as stats
 
 from collections import namedtuple
@@ -132,3 +133,56 @@ def run(params):
             )
 
     logging.info("Done")
+
+# def run(params):
+#     with open(params.multisample_profile_path, "r") as profile_file:
+#         multisample_profile = json.load(profile_file)
+#     count_table = generate_table_with_anchor_counts(multisample_profile["Counts"])
+#     logging.info("Loaded %i regions", len(count_table))
+
+#     logging.info("Normalizing counts")
+#     sample_stats = multisample_profile["Parameters"]
+#     common.depth_normalize_counts(sample_stats, count_table)
+
+#     logging.info("Filtering counts")
+#     count_table = common.filter_counts_by_magnitude(count_table, params.min_count)
+
+#     if params.target_region_path:
+#         target_regions = load_target_regions(params.target_region_path)
+#         logging.info("Restricting analysis to %i regions", len(target_regions))
+#         count_table = common.filter_counts_by_region(count_table, target_regions)
+
+#     manifest = common.load_manifest(params.manifest_path)
+#     sample_status = common.extract_case_control_assignments(manifest)
+
+#     header = "contig\tstart\tend\tmotif\tmu\tsigma\tzscores"
+#     with open(params.output_path, "w") as results_file:
+#         print(header, file=results_file)
+#         for row in count_table:
+#             region_encoding = row["region"]
+#             if region_encoding == "unaligned":
+#                 continue
+
+#             contig, coords = region_encoding.rsplit(":", 1)
+#             start, end = coords.split("-")
+#             start, end = int(start), int(end)
+
+#             mu, sigma, zscores = common.get_boot_stats(sample_status, row['sample_counts'])
+
+#             zscore_encoding = ",".join(
+#                 "{}:{:.2f}".format(s, c) for s, c in zscores.items()
+#             )
+
+#             print(
+#                 contig,
+#                 start,
+#                 end,
+#                 row["unit"],
+#                 mu,
+#                 sigma,
+#                 zscore_encoding,
+#                 sep="\t",
+#                 file=results_file,
+#             )
+
+#     logging.info("Done")
