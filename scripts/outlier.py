@@ -72,11 +72,9 @@ def add_locus_command(subparsers):
                       ' (default: {})').format(def_z_score)
     command_parser.add_argument("--z-score", help=help, default=def_z_score, type=int)
 
-    def_no_ctrl = 1
-    help = ('If at least one control has z score higher than cutoff, skip.'
-                      ' (default: {})').format(def_no_ctrl)
-    command_parser.add_argument("--no-ctrl", help=help, default=def_no_ctrl, type=int)
-
+    help = 'If at least one control has z score higher than cutoff, skip.'
+    command_parser.add_argument("--no-ctrl", help=help, action="store_true")
+    
     return command_parser
 
 

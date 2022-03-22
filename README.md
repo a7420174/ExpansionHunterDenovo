@@ -32,7 +32,6 @@ list_TR.py locus \
   - `--z-score`: The cutoff of z score (Default: 1)
 
   - `--no-ctrl`: If at least one control has z score higher than cutoff, skip.
-  options:  0(false) or 1(true) (Default: 0)
 
 - TSV 파일 형식 변환
 
@@ -47,8 +46,7 @@ outlier.py locus --manifest manifest.txt \
 --multisample-profile multisample_profile.json \
 --output outlier_locus.tsv \
 --min-count 2 \
---z-score 10 \
---no-ctrl 1
+--z-score 10
 ```
 
 3. hg19_to_hg38.py

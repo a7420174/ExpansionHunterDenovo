@@ -95,11 +95,11 @@ def run(params):
             start, end = coords.split("-")
             start, end = int(start), int(end)
 
-            if params.no_ctrl == 0:
+            if params.no_ctrl:
                 zscores, cases_with_high_counts = common.run_zscore_analysis(
                     sample_status, row["sample_counts"], params.z_score
                 )
-            elif params.no_ctrl == 1:
+            elif params.no_ctrl:
                 zscores, cases_with_high_counts = common.run_zscore_analysis_no_ctrl(
                     sample_status, row["sample_counts"], params.z_score
                 )
